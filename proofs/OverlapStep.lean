@@ -1,4 +1,4 @@
-import Erdos7.Capacity
+import Mathlib
 
 /-!
 A local overlap-charging rule for certified forest witnesses.
