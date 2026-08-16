@@ -22,12 +22,9 @@ jobs:
           path: harness
       - name: Overlay proof modules
         run: |
-          cp harness/proofs/OverlapStep.lean Erdos7/OverlapStep.lean
-          cp harness/proofs/CapacityLogic.lean Erdos7/CapacityLogic.lean
-          cp harness/proofs/OverlapSequence.lean Erdos7/OverlapSequence.lean
-          cp harness/proofs/OnePrimeCapacity.lean Erdos7/OnePrimeCapacity.lean
-          cp harness/proofs/ForcedModulus.lean Erdos7/ForcedModulus.lean
-          cp harness/proofs/ConditionedForcing.lean Erdos7/ConditionedForcing.lean
+          for f in OverlapStep CapacityLogic OverlapSequence OnePrimeCapacity ForcedModulus ConditionedForcing Certificate10395; do
+            cp harness/proofs/$f.lean Erdos7/$f.lean
+          done
       - name: Install pinned Lean toolchain
         uses: leanprover/lean-action@v1
         with:
@@ -38,12 +35,9 @@ jobs:
           use-mathlib-cache: true
       - name: Kernel-check proof modules
         run: |
-          lake env lean Erdos7/OverlapStep.lean
-          lake env lean Erdos7/CapacityLogic.lean
-          lake env lean Erdos7/OverlapSequence.lean
-          lake env lean Erdos7/OnePrimeCapacity.lean
-          lake env lean Erdos7/ForcedModulus.lean
-          lake env lean Erdos7/ConditionedForcing.lean
+          for f in OverlapStep CapacityLogic OverlapSequence OnePrimeCapacity ForcedModulus ConditionedForcing Certificate10395; do
+            lake env lean Erdos7/$f.lean
+          done
       - name: Source trust gate
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean Erdos7/CapacityLogic.lean Erdos7/OverlapSequence.lean Erdos7/OnePrimeCapacity.lean Erdos7/ForcedModulus.lean Erdos7/ConditionedForcing.lean
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,OnePrimeCapacity,ForcedModulus,ConditionedForcing,Certificate10395}.lean
