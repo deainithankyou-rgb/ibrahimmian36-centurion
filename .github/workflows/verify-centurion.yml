@@ -1,4 +1,4 @@
-name: Verify Centurion Baseline
+name: Verify Centurion Proof Extension
 
 on:
   push:
@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  baseline:
+  overlap-step:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout upstream centurion
@@ -16,13 +16,24 @@ jobs:
         with:
           repository: ibrahimmian36/centurion
           ref: main
-      - name: Install pinned Lean toolchain and build
+      - name: Checkout proof harness
+        uses: actions/checkout@v5
+        with:
+          path: harness
+      - name: Overlay proof module
+        run: cp harness/proofs/OverlapStep.lean Erdos7/OverlapStep.lean
+      - name: Install pinned Lean toolchain
         uses: leanprover/lean-action@v1
-      - name: Fetch mathlib cache
-        run: lake exe cache get
-      - name: Build Erdos7
-        run: lake build Erdos7
-      - name: Axiom gate
-        run: bash scripts/axiom_gate.sh
-
-# Trigger baseline verification after workflow activation.
+        with:
+          auto-config: false
+          build: false
+          test: false
+          lint: false
+          use-mathlib-cache: true
+      - name: Build existing Capacity dependency
+        run: lake build Erdos7.Capacity
+      - name: Kernel-check overlap step
+        run: lake env lean Erdos7/OverlapStep.lean
+      - name: Source trust gate
+        run: |
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean
