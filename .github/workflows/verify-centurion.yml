@@ -26,7 +26,7 @@ jobs:
           path: harness
       - name: Overlay proof modules
         run: |
-          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity Certificate10395 NoCover10395 Bridge10395; do
+          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity Certificate10395 NoCover10395 Bridge10395 Audit10395; do
             cp harness/proofs/$f.lean Erdos7/$f.lean
           done
       - name: Install pinned Lean toolchain
@@ -43,3 +43,11 @@ jobs:
       - name: Source trust gate
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,Certificate10395,NoCover10395,Bridge10395}.lean
+      - name: Theorem axiom audit
+        run: |
+          out=$(lake env lean Erdos7/Audit10395.lean 2>&1)
+          echo "$out"
+          test "$(echo "$out" | grep -c 'depends on')" -eq 2
+          ! echo "$out" | grep -qE 'sorryAx|_native'
+          viol=$(echo "$out" | grep 'depends on' | sed 's/.*axioms: \[//; s/\]//' | tr ',' '\n' | tr -d ' ' | grep -vE '^(propext|Classical\.choice|Quot\.sound)$' || true)
+          test -z "$viol"
