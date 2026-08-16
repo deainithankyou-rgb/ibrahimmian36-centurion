@@ -1,4 +1,4 @@
-import Erdos7.Capacity
+import Erdos7.RawCapacity
 import Erdos7.OnePrimeCapacity
 
 /-! One-prime conditioned forcing. -/
@@ -25,7 +25,7 @@ theorem conditionedClass_card_le
       intro x hx
       simp only [conditionedClass, Finset.mem_filter, Finset.mem_range] at hx ⊢
       exact ⟨hx.1, hx.2.1⟩
-    have hraw := card_filter_mod_le N q.1 q.2 hqdvd
+    have hraw := card_class_mod_le N q.1 q.2 hqdvd
     exact (Finset.card_le_card hsub).trans (by simpa [onePrimeCap, hpq] using hraw)
   · have hcopP : q0.1.Coprime q.1 := hq0prime.coprime_iff_not_dvd.mpr hpq
     have hcop : q.1.Coprime q0.1 := hcopP.symm
@@ -34,17 +34,12 @@ theorem conditionedClass_card_le
       N q.1 q0.1 q.2 q0.2 hq0prime.pos hq0res hcop hdp
     simpa [conditionedClass, onePrimeCap, hpq] using h
 
-/-- The core avoiding one selected prime class has the usual CRT lower bound. -/
+/-- The core avoiding one selected prime class has the standard lower bound. -/
 theorem conditionedCore_card_ge
-    {N : ℕ} (q0 : ℕ × ℕ)
-    (hq0dvd : q0.1 ∣ N) (hq0one : 1 < q0.1) :
+    {N : ℕ} (q0 : ℕ × ℕ) (hq0dvd : q0.1 ∣ N) :
     (N / q0.1) * (q0.1 - 1) ≤ (conditionedCore N q0).card := by
-  classical
-  have h := uncovered_card_ge (N := N) ({q0} : Finset (ℕ × ℕ))
-    (by intro q hq; simpa using hq0dvd)
-    (by intro q hq; simpa using hq0one)
-    (by intro p hp q hq hpq; simp at hp hq; subst p; subst q; contradiction)
-  simpa [conditionedCore] using h
+  simpa [conditionedCore, avoidClass] using
+    avoid_class_card_ge N q0.1 q0.2 hq0dvd
 
 /-- A covering still covers the core after deleting its selected prime class. -/
 theorem conditionedCore_covered
@@ -83,15 +78,19 @@ theorem forced_modulus_after_one_prime
   by_contra hno
   push_neg at hno
   have hcore : (N / p) * (p - 1) ≤ (conditionedCore N q0).card := by
-    subst p
-    exact conditionedCore_card_ge q0 hpdvd hpprime.one_lt
+    rw [← hq0mod]
+    exact conditionedCore_card_ge q0 (by simpa [hq0mod] using hpdvd)
   have hcover := conditionedCore_covered S q0 hq0S hcov
   have hcap : ∀ q ∈ S.erase q0,
       (conditionedClass N q0 q).card ≤ onePrimeCap N p q.1 := by
     intro q hq
     have hqS := (Finset.mem_erase.mp hq).2
-    subst p
-    exact conditionedClass_card_le q0 q hpprime hpdvd hq0res (hdvd q hqS)
+    have h := conditionedClass_card_le q0 q
+      (by simpa [hq0mod] using hpprime)
+      (by simpa [hq0mod] using hpdvd)
+      (by simpa [hq0mod] using hq0res)
+      (hdvd q hqS)
+    simpa [hq0mod] using h
   have hupper : (conditionedCore N q0).card ≤
       ∑ q ∈ S.erase q0, onePrimeCap N p q.1 := by
     calc
@@ -101,8 +100,9 @@ theorem forced_modulus_after_one_prime
       _ ≤ ∑ q ∈ S.erase q0, (conditionedClass N q0 q).card := Finset.card_biUnion_le
       _ ≤ ∑ q ∈ S.erase q0, onePrimeCap N p q.1 :=
         Finset.sum_le_sum (fun q hq => hcap q hq)
-  have hinjErase : Set.InjOn Prod.fst ((S.erase q0 : Finset (ℕ × ℕ)) : Set (ℕ × ℕ)) :=
-    fun a ha b hb hab => hinj (Finset.mem_of_mem_erase ha) (Finset.mem_of_mem_erase hb) hab
+  have hinjErase : Set.InjOn Prod.fst ((S.erase q0 : Finset (ℕ × ℕ)) : Set (ℕ × ℕ)) := by
+    intro a ha b hb hab
+    exact hinj (Finset.mem_of_mem_erase ha) (Finset.mem_of_mem_erase hb) hab
   have hsum : ∑ d ∈ (S.erase q0).image Prod.fst, onePrimeCap N p d =
       ∑ q ∈ S.erase q0, onePrimeCap N p q.1 := Finset.sum_image hinjErase
   have hsub : (S.erase q0).image Prod.fst ⊆ (Allowed.erase p).erase d0 := by
@@ -112,9 +112,10 @@ theorem forced_modulus_after_one_prime
     have hqne0 := (Finset.mem_erase.mp hqErase).1
     have hnep : q.1 ≠ p := by
       intro heq
-      have hfst : q.1 = q0.1 := by simpa [hq0mod] using heq
+      have hfst : q.1 = q0.1 := heq.trans hq0mod.symm
       exact hqne0 (hinj hqS hq0S hfst)
-    exact Finset.mem_erase.mpr ⟨hno q hqS, Finset.mem_erase.mpr ⟨hnep, hallowed q hqS⟩⟩
+    exact Finset.mem_erase.mpr ⟨hno q hqS,
+      Finset.mem_erase.mpr ⟨hnep, hallowed q hqS⟩⟩
   have hmono : ∑ d ∈ (S.erase q0).image Prod.fst, onePrimeCap N p d ≤
       ∑ d ∈ (Allowed.erase p).erase d0, onePrimeCap N p d :=
     Finset.sum_le_sum_of_subset hsub
