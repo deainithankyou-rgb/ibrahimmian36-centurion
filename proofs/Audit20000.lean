@@ -1,0 +1,6 @@
+import Erdos7.Enumeration20000
+
+#print axioms no_covering_lcm_dvd_10395_structural
+#print axioms no_covering_lcm_dvd_12285_structural
+#print axioms no_covering_lcm_dvd_17325_structural
+#print axioms odd_covering_lcm_gt_20000
