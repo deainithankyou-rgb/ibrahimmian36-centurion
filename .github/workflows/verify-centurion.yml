@@ -37,10 +37,9 @@ jobs:
           test: false
           lint: false
           use-mathlib-cache: true
-          use-github-cache: true
-      - name: Kernel-build proof modules
-        run: |
-          lake build Erdos7.OverlapStep Erdos7.CapacityLogic Erdos7.OverlapSequence Erdos7.RawCapacity Erdos7.OnePrimeCapacity Erdos7.ForcedModulus Erdos7.ConditionedForcing Erdos7.MultiCoreCapacity Erdos7.Certificate10395 Erdos7.NoCover10395
+          use-github-cache: false
+      - name: Kernel-build 10395 theorem
+        run: lake build Erdos7.NoCover10395
       - name: Source trust gate
         run: |
           ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,Certificate10395,NoCover10395}.lean
