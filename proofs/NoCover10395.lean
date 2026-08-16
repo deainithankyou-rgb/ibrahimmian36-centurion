@@ -70,7 +70,7 @@ theorem no_distinct_divisor_cover_10395
         simp only [U, Finset.mem_insert, Finset.mem_singleton] at hp hq
         rcases hp with rfl | rfl | rfl | rfl <;>
           rcases hq with rfl | rfl | rfl | rfl <;>
-          norm_num at hpq ⊢)
+          (try contradiction) <;> norm_num)
     simpa [multiCore, U] using h
   let R : Finset (ℕ × ℕ) := S \ U
   have hcoverCore : multiCore 10395 U ⊆ R.biUnion (multiCoreClass 10395 U) := by
