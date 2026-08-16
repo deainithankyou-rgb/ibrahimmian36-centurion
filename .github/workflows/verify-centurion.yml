@@ -37,7 +37,7 @@ jobs:
           test: false
           lint: false
           use-mathlib-cache: true
-          use-github-cache: false
+          use-github-cache: true
       - name: Kernel-build proof modules
         run: |
           lake build Erdos7.OverlapStep Erdos7.CapacityLogic Erdos7.OverlapSequence Erdos7.RawCapacity Erdos7.OnePrimeCapacity Erdos7.ForcedModulus Erdos7.ConditionedForcing Erdos7.Certificate10395
