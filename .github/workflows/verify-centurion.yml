@@ -26,7 +26,7 @@ jobs:
           path: harness
       - name: Overlay proof modules
         run: |
-          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity FourForcedPrimeCertificate IntegerBridgeGeneric Certificate10395 NoCover10395 Bridge10395 Audit10395 Certificate12285 NoCover12285 Bridge12285 Certificate17325 NoCover17325 Bridge17325; do
+          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity FourForcedPrimeCertificate IntegerBridgeGeneric Certificate10395 NoCover10395 Bridge10395 Certificate12285 NoCover12285 Bridge12285 Certificate17325 NoCover17325 Bridge17325 Capacity20000 Enumeration20000 Audit20000; do
             cp harness/proofs/$f.lean Erdos7/$f.lean
           done
       - name: Install pinned Lean toolchain
@@ -38,16 +38,16 @@ jobs:
           lint: false
           use-mathlib-cache: true
           use-github-cache: false
-      - name: Kernel-build generic engine and all three stragglers
-        run: lake build Erdos7.FourForcedPrimeCertificate Erdos7.IntegerBridgeGeneric Erdos7.Bridge10395 Erdos7.Bridge12285 Erdos7.Bridge17325
+      - name: Kernel-build global >20000 theorem
+        run: lake build Erdos7.Enumeration20000
       - name: Source trust gate
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,FourForcedPrimeCertificate,IntegerBridgeGeneric,Certificate10395,NoCover10395,Bridge10395,Certificate12285,NoCover12285,Bridge12285,Certificate17325,NoCover17325,Bridge17325}.lean
-      - name: 10395 theorem axiom audit
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,FourForcedPrimeCertificate,IntegerBridgeGeneric,Certificate10395,NoCover10395,Bridge10395,Certificate12285,NoCover12285,Bridge12285,Certificate17325,NoCover17325,Bridge17325,Capacity20000,Enumeration20000}.lean
+      - name: Headline theorem axiom audit
         run: |
-          out=$(lake env lean Erdos7/Audit10395.lean 2>&1)
+          out=$(lake env lean Erdos7/Audit20000.lean 2>&1)
           echo "$out"
-          test "$(echo "$out" | grep -c 'depends on')" -eq 2
+          test "$(echo "$out" | grep -c 'depends on')" -eq 4
           ! echo "$out" | grep -qE 'sorryAx|_native'
           viol=$(echo "$out" | grep 'depends on' | sed 's/.*axioms: \[//; s/\]//' | tr ',' '\n' | tr -d ' ' | grep -vE '^(propext|Classical\.choice|Quot\.sound)$' || true)
           test -z "$viol"
