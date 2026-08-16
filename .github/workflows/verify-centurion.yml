@@ -33,6 +33,7 @@ jobs:
           test: false
           lint: false
           use-mathlib-cache: true
+          use-github-cache: false
       - name: Kernel-check proof modules
         run: |
           for f in OverlapStep CapacityLogic OverlapSequence OnePrimeCapacity ForcedModulus ConditionedForcing Certificate10395; do
