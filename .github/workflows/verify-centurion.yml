@@ -1,0 +1,26 @@
+name: Verify Centurion Baseline
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout upstream centurion
+        uses: actions/checkout@v5
+        with:
+          repository: ibrahimmian36/centurion
+          ref: main
+      - name: Install pinned Lean toolchain and build
+        uses: leanprover/lean-action@v1
+      - name: Fetch mathlib cache
+        run: lake exe cache get
+      - name: Build Erdos7
+        run: lake build Erdos7
+      - name: Axiom gate
+        run: bash scripts/axiom_gate.sh
