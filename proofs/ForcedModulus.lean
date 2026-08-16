@@ -1,7 +1,7 @@
-import Erdos7.Density
+import Erdos7.RawCapacity
 
 /-!
-A generic forced-modulus rule derived from the ordinary density bound.
+A generic forced-modulus rule derived from the ordinary raw capacity bound.
 The finite arithmetic set `Allowed` is an untrusted-search output; Lean only
 checks subset membership and the final strict capacity inequality.
 -/
@@ -14,10 +14,11 @@ theorem forced_modulus_of_density
     (hallowed : ∀ q ∈ S, q.1 ∈ Allowed)
     (harith : ∑ d ∈ Allowed.erase d0, N / d < N) :
     ∃ q ∈ S, q.1 = d0 := by
+  classical
   by_contra hno
   push_neg at hno
   have hkey : N ≤ ∑ q ∈ S, N / q.1 :=
-    covering_density N S hdvd hcov
+    covering_raw_capacity N S hdvd hcov
   have hsumD : ∑ d ∈ S.image Prod.fst, N / d = ∑ q ∈ S, N / q.1 :=
     Finset.sum_image hinj
   have hsub : S.image Prod.fst ⊆ Allowed.erase d0 := by
