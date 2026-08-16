@@ -47,32 +47,35 @@ theorem avoid_class_card_ge (N p a : ℕ) (hd : p ∣ N) (ha : a < p) :
     have hlt : p * k + r < N := by
       calc
         p * k + r < p * k + p := Nat.add_lt_add_left hrlt _
-        _ = p * (k + 1) := by omega
+        _ = p * (k + 1) := by simp [Nat.mul_add]
         _ ≤ p * (N / p) := Nat.mul_le_mul_left p (Nat.succ_le_of_lt hklt)
         _ = N := Nat.mul_div_cancel' hd
     rw [avoidClass, Finset.mem_filter, Finset.mem_range]
     constructor
     · exact hlt
-    · rw [Nat.add_mod, Nat.mul_mod, Nat.mod_self, zero_mul, zero_add,
-          Nat.mod_eq_of_lt hrlt]
-      exact Finset.ne_of_mem_erase hr
+    · have hrne : r ≠ a := Finset.ne_of_mem_erase hr
+      simpa [Nat.add_mod, Nat.mul_mod, Nat.mod_self, Nat.mod_eq_of_lt hrlt] using hrne
   have hinj : Set.InjOn (fun bk : ℕ × ℕ => p * bk.1 + bk.2) (T : Set (ℕ × ℕ)) := by
     rintro ⟨k, r⟩ hkr ⟨k', r'⟩ hkr' heq
     rw [Finset.mem_coe, Finset.mem_product] at hkr hkr'
     have hrlt : r < p := Finset.mem_range.mp (Finset.mem_of_mem_erase hkr.2)
     have hrlt' : r' < p := Finset.mem_range.mp (Finset.mem_of_mem_erase hkr'.2)
+    have hmodEq := congrArg (fun x : ℕ => x % p) heq
     have hmod : r = r' := by
-      have := congrArg (fun x : ℕ => x % p) heq
-      simpa [Nat.add_mod, Nat.mul_mod, Nat.mod_self, hrlt, hrlt'] using this
+      simpa [Nat.add_mod, Nat.mul_mod, Nat.mod_self,
+        Nat.mod_eq_of_lt hrlt, Nat.mod_eq_of_lt hrlt'] using hmodEq
     subst r'
-    have : p * k = p * k' := by omega
-    exact Prod.ext (Nat.eq_of_mul_eq_mul_left hp this) rfl
+    have hpk : p * k = p * k' := Nat.add_right_cancel heq
+    have hkEq : k = k' := Nat.eq_of_mul_eq_mul_left hp hpk
+    subst k'
+    rfl
   have hcard : T.card ≤ (avoidClass N p a).card :=
     Finset.card_le_card_of_injOn (fun bk : ℕ × ℕ => p * bk.1 + bk.2) hmap hinj
   have hamem : a ∈ Finset.range p := Finset.mem_range.mpr ha
   have hT : T.card = (N / p) * (p - 1) := by
     simp [T, Finset.card_product, Finset.card_erase_of_mem hamem]
-  simpa [hT] using hcard
+  rw [hT] at hcard
+  exact hcard
 
 /-- A covering of `[0,N)` by indexed classes satisfies the elementary
 sum-capacity inequality. -/
