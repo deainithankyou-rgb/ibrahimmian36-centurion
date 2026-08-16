@@ -25,6 +25,7 @@ jobs:
           cp harness/proofs/OverlapStep.lean Erdos7/OverlapStep.lean
           cp harness/proofs/CapacityLogic.lean Erdos7/CapacityLogic.lean
           cp harness/proofs/OverlapSequence.lean Erdos7/OverlapSequence.lean
+          cp harness/proofs/OnePrimeCapacity.lean Erdos7/OnePrimeCapacity.lean
       - name: Install pinned Lean toolchain
         uses: leanprover/lean-action@v1
         with:
@@ -38,6 +39,7 @@ jobs:
           lake env lean Erdos7/OverlapStep.lean
           lake env lean Erdos7/CapacityLogic.lean
           lake env lean Erdos7/OverlapSequence.lean
+          lake env lean Erdos7/OnePrimeCapacity.lean
       - name: Source trust gate
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean Erdos7/CapacityLogic.lean Erdos7/OverlapSequence.lean
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean Erdos7/CapacityLogic.lean Erdos7/OverlapSequence.lean Erdos7/OnePrimeCapacity.lean
