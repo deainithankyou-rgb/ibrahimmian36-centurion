@@ -36,10 +36,10 @@ theorem conditionedClass_card_le
 
 /-- The core avoiding one selected prime class has the standard lower bound. -/
 theorem conditionedCore_card_ge
-    {N : ℕ} (q0 : ℕ × ℕ) (hq0dvd : q0.1 ∣ N) :
+    {N : ℕ} (q0 : ℕ × ℕ) (hq0dvd : q0.1 ∣ N) (hq0res : q0.2 < q0.1) :
     (N / q0.1) * (q0.1 - 1) ≤ (conditionedCore N q0).card := by
   simpa [conditionedCore, avoidClass] using
-    avoid_class_card_ge N q0.1 q0.2 hq0dvd
+    avoid_class_card_ge N q0.1 q0.2 hq0dvd hq0res
 
 /-- A covering still covers the core after deleting its selected prime class. -/
 theorem conditionedCore_covered
@@ -79,7 +79,9 @@ theorem forced_modulus_after_one_prime
   push_neg at hno
   have hcore : (N / p) * (p - 1) ≤ (conditionedCore N q0).card := by
     rw [← hq0mod]
-    exact conditionedCore_card_ge q0 (by simpa [hq0mod] using hpdvd)
+    exact conditionedCore_card_ge q0
+      (by simpa [hq0mod] using hpdvd)
+      (by simpa [hq0mod] using hq0res)
   have hcover := conditionedCore_covered S q0 hq0S hcov
   have hcap : ∀ q ∈ S.erase q0,
       (conditionedClass N q0 q).card ≤ onePrimeCap N p q.1 := by
