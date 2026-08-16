@@ -124,13 +124,18 @@ theorem no_distinct_divisor_cover_10395
       have heq : q = (11,a11) := hinj hqS hq11S (by simpa using he)
       exact hqnotU (by simpa [U, heq])
     rw [remainingDivisors10395]
-    repeat' apply Finset.mem_erase.mpr
-    exact ⟨hn11, hn7, hn5, hn3, (hone q hqS).ne',
-      (Nat.mem_divisors.mpr ⟨hdvd q hqS, by norm_num⟩)⟩
+    exact Finset.mem_erase.mpr ⟨hn11,
+      Finset.mem_erase.mpr ⟨hn7,
+        Finset.mem_erase.mpr ⟨hn5,
+          Finset.mem_erase.mpr ⟨hn3,
+            Finset.mem_erase.mpr ⟨(hone q hqS).ne',
+              Nat.mem_divisors.mpr ⟨hdvd q hqS, by norm_num⟩⟩⟩⟩⟩⟩
   have hsumMono : ∑ d ∈ R.image Prod.fst, fourPrimeCap10395 d ≤
       ∑ d ∈ remainingDivisors10395, fourPrimeCap10395 d :=
     Finset.sum_le_sum_of_subset hsub
   rw [hsumImage] at hsumMono
+  have hcapR : ∑ q ∈ R, fourPrimeCap10395 q.1 < 4320 :=
+    lt_of_le_of_lt hsumMono residual_capacity_10395
   have hupper : (multiCore 10395 U).card < 4320 :=
-    lt_of_le_of_le hupperR (lt_of_le_of_lt hsumMono residual_capacity_10395)
+    lt_of_le_of_lt hupperR hcapR
   omega
