@@ -30,8 +30,6 @@ jobs:
           test: false
           lint: false
           use-mathlib-cache: true
-      - name: Build existing Capacity dependency
-        run: lake build Erdos7.Capacity
       - name: Kernel-check overlap step
         run: lake env lean Erdos7/OverlapStep.lean
       - name: Source trust gate
