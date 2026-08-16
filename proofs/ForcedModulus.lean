@@ -16,7 +16,7 @@ theorem forced_modulus_of_density
     ∃ q ∈ S, q.1 = d0 := by
   classical
   by_contra hno
-  push_neg at hno
+  push Not at hno
   have hkey : N ≤ ∑ q ∈ S, N / q.1 :=
     covering_raw_capacity N S hdvd hcov
   have hsumD : ∑ d ∈ S.image Prod.fst, N / d = ∑ q ∈ S, N / q.1 :=
@@ -34,4 +34,4 @@ theorem forced_modulus_of_density
 /-- Closed kernel arithmetic for the first 10395 forcing step. -/
 theorem capacity_without_3_10395 :
     ∑ d ∈ ((10395 : ℕ).divisors.erase 1).erase 3, 10395 / d < 10395 := by
-  norm_num [Nat.divisors]
+  decide
