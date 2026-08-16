@@ -24,3 +24,5 @@ jobs:
         run: lake build Erdos7
       - name: Axiom gate
         run: bash scripts/axiom_gate.sh
+
+# Trigger baseline verification after workflow activation.
