@@ -26,7 +26,7 @@ jobs:
           path: harness
       - name: Overlay proof modules
         run: |
-          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity Certificate10395 NoCover10395 Bridge10395 Audit10395; do
+          for f in OverlapStep CapacityLogic OverlapSequence RawCapacity OnePrimeCapacity ForcedModulus ConditionedForcing MultiCoreCapacity FourForcedPrimeCertificate Certificate10395 NoCover10395 Bridge10395 Audit10395; do
             cp harness/proofs/$f.lean Erdos7/$f.lean
           done
       - name: Install pinned Lean toolchain
@@ -38,11 +38,11 @@ jobs:
           lint: false
           use-mathlib-cache: true
           use-github-cache: false
-      - name: Kernel-build integer 10395 theorem
-        run: lake build Erdos7.Bridge10395
+      - name: Kernel-build generic and integer 10395 theorems
+        run: lake build Erdos7.FourForcedPrimeCertificate Erdos7.Bridge10395
       - name: Source trust gate
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,Certificate10395,NoCover10395,Bridge10395}.lean
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/{OverlapStep,CapacityLogic,OverlapSequence,RawCapacity,OnePrimeCapacity,ForcedModulus,ConditionedForcing,MultiCoreCapacity,FourForcedPrimeCertificate,Certificate10395,NoCover10395,Bridge10395}.lean
       - name: Theorem axiom audit
         run: |
           out=$(lake env lean Erdos7/Audit10395.lean 2>&1)
