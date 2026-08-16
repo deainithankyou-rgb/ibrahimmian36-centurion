@@ -31,8 +31,9 @@ theorem forced_modulus_of_density
   rw [hsumD] at hmono
   omega
 
+set_option maxRecDepth 100000
+
 /-- Closed kernel arithmetic for the first 10395 forcing step. -/
-set_option maxRecDepth 100000 in
 theorem capacity_without_3_10395 :
     ∑ d ∈ ((10395 : ℕ).divisors.erase 1).erase 3, 10395 / d < 10395 := by
   decide
