@@ -3,7 +3,7 @@ import Erdos7.MultiCoreCapacity
 /-!
 Reusable final-stage certificate for four already-forced prime classes.
 The search/compiler supplies the four forced classes, a lower bound for the
-residual core, and one closed arithmetic inequality.  Lean checks the rest.
+residual core, and one closed arithmetic inequality. Lean checks the rest.
 -/
 
 def fourPrimeCap (N p1 p2 p3 p4 d : ℕ) : ℕ :=
@@ -21,6 +21,7 @@ theorem no_cover_of_four_forced_primes
     {N L p1 p2 p3 p4 : ℕ}
     (S : Finset (ℕ × ℕ))
     (q1 q2 q3 q4 : ℕ × ℕ)
+    (hN : 0 < N)
     (hdvd : ∀ q ∈ S, q.1 ∣ N)
     (hone : ∀ q ∈ S, 1 < q.1)
     (hres : ∀ q ∈ S, q.2 < q.1)
@@ -73,7 +74,7 @@ theorem no_cover_of_four_forced_primes
       (by simp [U]) (by simpa [hq4mod] using hp4prime)
       (by simpa [hq4mod] using hp4dvd)
       (by simpa [hq4mod] using hq4res) hqd
-    exact le_min h1 (le_min h2 (le_min h3 h4))
+    simpa [fourPrimeCap] using (le_min h1 (le_min h2 (le_min h3 h4)))
   have hupperR : (multiCore N U).card ≤
       ∑ q ∈ R, fourPrimeCap N p1 p2 p3 p4 q.1 := by
     calc
@@ -115,8 +116,7 @@ theorem no_cover_of_four_forced_primes
         Finset.mem_erase.mpr ⟨hn2,
           Finset.mem_erase.mpr ⟨hn1,
             Finset.mem_erase.mpr ⟨(hone q hqS).ne',
-              Nat.mem_divisors.mpr ⟨hdvd q hqS,
-                Nat.pos_of_dvd_of_pos (hdvd q hqS) (by omega) |>.ne'⟩⟩⟩⟩⟩⟩
+              Nat.mem_divisors.mpr ⟨hdvd q hqS, hN.ne'⟩⟩⟩⟩⟩⟩
   have hsumMono :
       ∑ d ∈ R.image Prod.fst, fourPrimeCap N p1 p2 p3 p4 d ≤
         ∑ d ∈ remainingAfterFour N p1 p2 p3 p4, fourPrimeCap N p1 p2 p3 p4 d :=
