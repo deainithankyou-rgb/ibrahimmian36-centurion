@@ -5,6 +5,9 @@ import Mathlib
 def rawClass (N : ℕ) (q : ℕ × ℕ) : Finset ℕ :=
   (Finset.range N).filter (fun x => x % q.1 = q.2)
 
+def avoidClass (N p a : ℕ) : Finset ℕ :=
+  (Finset.range N).filter (fun x => x % p ≠ a)
+
 /-- If `d ∣ N`, a single residue class modulo `d` occupies at most `N / d`
 points of `[0,N)`. -/
 theorem card_class_mod_le (N d r : ℕ) (hd : d ∣ N) :
@@ -28,7 +31,26 @@ theorem card_class_mod_le (N d r : ℕ) (hd : d ∣ N) :
     exact Finset.card_le_card_of_injOn (fun x => x / d) hmap hinj
   simpa [T] using hcard
 
-/-- A covering of `[0,N)` by distinct indexed classes satisfies the elementary
+/-- Avoiding one residue modulo a divisor `p` leaves at least the standard
+`(N/p)(p-1)` points. -/
+theorem avoid_class_card_ge (N p a : ℕ) (hd : p ∣ N) :
+    (N / p) * (p - 1) ≤ (avoidClass N p a).card := by
+  classical
+  have hclass := card_class_mod_le N p a hd
+  have hpart := Finset.card_filter_add_card_filter_not
+    (s := Finset.range N) (fun x => x % p ≠ a)
+  simp only [Finset.card_range, not_ne_iff] at hpart
+  have hdiff : N - N / p ≤ (avoidClass N p a).card := by
+    dsimp [avoidClass]
+    omega
+  have hid : (N / p) * (p - 1) = N - N / p := by
+    rw [Nat.mul_sub_left_distrib]
+    simp only [Nat.mul_one]
+    rw [Nat.div_mul_cancel hd]
+  rw [hid]
+  exact hdiff
+
+/-- A covering of `[0,N)` by indexed classes satisfies the elementary
 sum-capacity inequality. -/
 theorem covering_raw_capacity
     (N : ℕ) (S : Finset (ℕ × ℕ))
