@@ -12,7 +12,8 @@ def fourPrimeCap10395 (d : ℕ) : ℕ :=
 def remainingDivisors10395 : Finset ℕ :=
   (((((10395 : ℕ).divisors.erase 1).erase 3).erase 5).erase 7).erase 11
 
-set_option maxRecDepth 100000 in
+set_option maxRecDepth 100000
+
 private theorem residual_capacity_10395 :
     ∑ d ∈ remainingDivisors10395, fourPrimeCap10395 d < 4320 := by
   decide
