@@ -20,7 +20,7 @@ theorem card_class_avoiding_coprime_residue_le
     simp only [Finset.mem_filter, Finset.mem_range] at hx
     rw [Finset.mem_product]
     constructor
-    · exact Nat.div_lt_div_of_lt_of_dvd hdp hx.1
+    · exact Finset.mem_range.mpr (Nat.div_lt_div_of_lt_of_dvd hdp hx.1)
     · rw [Finset.mem_erase]
       exact ⟨hx.2.2, Finset.mem_range.mpr (Nat.mod_lt x hp)⟩
   have hinj : Set.InjOn (fun x : ℕ => (x / (d * p), x % p))
@@ -35,7 +35,7 @@ theorem card_class_avoiding_coprime_residue_le
       change x % d = y % d
       rw [hx.2.1, hy.2.1]
     have hdpmod : x ≡ y [MOD d * p] :=
-      (Nat.modEq_and_modEq_iff_modEq_mul hcop).2 ⟨hdmod, hpmod⟩
+      (Nat.modEq_and_modEq_iff_modEq_mul hcop).1 ⟨hdmod, hpmod⟩
     exact Nat.ext_div_modEq hq hdpmod
   have hcard :
       ((Finset.range N).filter (fun x => x % d = r ∧ x % p ≠ a)).card ≤ T.card := by
