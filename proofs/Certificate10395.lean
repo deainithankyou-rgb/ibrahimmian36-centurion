@@ -12,16 +12,19 @@ private theorem allowed_of_hyp_10395 (S : Finset (ℕ × ℕ))
   rw [allowed10395, Finset.mem_erase, Nat.mem_divisors]
   exact ⟨(hone q hq).ne', hdvd q hq, by norm_num⟩
 
+set_option maxRecDepth 100000 in
 private theorem cap3_without5 :
     ∑ d ∈ (allowed10395.erase 3).erase 5, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
   decide
 
+set_option maxRecDepth 100000 in
 private theorem cap3_without7 :
     ∑ d ∈ (allowed10395.erase 3).erase 7, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
   decide
 
+set_option maxRecDepth 100000 in
 private theorem cap3_without11 :
     ∑ d ∈ (allowed10395.erase 3).erase 11, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
