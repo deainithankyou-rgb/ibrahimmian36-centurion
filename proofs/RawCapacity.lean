@@ -31,24 +31,48 @@ theorem card_class_mod_le (N d r : ℕ) (hd : d ∣ N) :
     exact Finset.card_le_card_of_injOn (fun x => x / d) hmap hinj
   simpa [T] using hcard
 
-/-- Avoiding one residue modulo a divisor `p` leaves at least the standard
-`(N/p)(p-1)` points. -/
-theorem avoid_class_card_ge (N p a : ℕ) (hd : p ∣ N) :
+/-- Avoiding one normalized residue modulo a divisor `p` leaves at least the
+standard `(N/p)(p-1)` points. -/
+theorem avoid_class_card_ge (N p a : ℕ) (hd : p ∣ N) (ha : a < p) :
     (N / p) * (p - 1) ≤ (avoidClass N p a).card := by
   classical
-  have hclass := card_class_mod_le N p a hd
-  have hpart := Finset.card_filter_add_card_filter_not
-    (s := Finset.range N) (fun x => x % p ≠ a)
-  simp only [Finset.card_range, not_ne_iff] at hpart
-  have hdiff : N - N / p ≤ (avoidClass N p a).card := by
-    dsimp [avoidClass]
-    omega
-  have hid : (N / p) * (p - 1) = N - N / p := by
-    rw [Nat.mul_sub_left_distrib]
-    simp only [Nat.mul_one]
-    rw [Nat.div_mul_cancel hd]
-  rw [hid]
-  exact hdiff
+  have hp : 0 < p := lt_of_le_of_lt (Nat.zero_le a) ha
+  let T := Finset.range (N / p) ×ˢ ((Finset.range p).erase a)
+  have hmap : ∀ bk ∈ T, p * bk.1 + bk.2 ∈ avoidClass N p a := by
+    rintro ⟨k, r⟩ hkr
+    rw [Finset.mem_product] at hkr
+    rcases hkr with ⟨hk, hr⟩
+    have hklt : k < N / p := Finset.mem_range.mp hk
+    have hrlt : r < p := Finset.mem_range.mp (Finset.mem_of_mem_erase hr)
+    have hlt : p * k + r < N := by
+      calc
+        p * k + r < p * k + p := Nat.add_lt_add_left hrlt _
+        _ = p * (k + 1) := by omega
+        _ ≤ p * (N / p) := Nat.mul_le_mul_left p (Nat.succ_le_of_lt hklt)
+        _ = N := Nat.mul_div_cancel' hd
+    rw [avoidClass, Finset.mem_filter, Finset.mem_range]
+    constructor
+    · exact hlt
+    · rw [Nat.add_mod, Nat.mul_mod, Nat.mod_self, zero_mul, zero_add,
+          Nat.mod_eq_of_lt hrlt]
+      exact Finset.ne_of_mem_erase hr
+  have hinj : Set.InjOn (fun bk : ℕ × ℕ => p * bk.1 + bk.2) (T : Set (ℕ × ℕ)) := by
+    rintro ⟨k, r⟩ hkr ⟨k', r'⟩ hkr' heq
+    rw [Finset.mem_coe, Finset.mem_product] at hkr hkr'
+    have hrlt : r < p := Finset.mem_range.mp (Finset.mem_of_mem_erase hkr.2)
+    have hrlt' : r' < p := Finset.mem_range.mp (Finset.mem_of_mem_erase hkr'.2)
+    have hmod : r = r' := by
+      have := congrArg (fun x : ℕ => x % p) heq
+      simpa [Nat.add_mod, Nat.mul_mod, Nat.mod_self, hrlt, hrlt'] using this
+    subst r'
+    have : p * k = p * k' := by omega
+    exact Prod.ext (Nat.eq_of_mul_eq_mul_left hp this) rfl
+  have hcard : T.card ≤ (avoidClass N p a).card :=
+    Finset.card_le_card_of_injOn (fun bk : ℕ × ℕ => p * bk.1 + bk.2) hmap hinj
+  have hamem : a ∈ Finset.range p := Finset.mem_range.mpr ha
+  have hT : T.card = (N / p) * (p - 1) := by
+    simp [T, Finset.card_product, Finset.card_erase_of_mem hamem]
+  simpa [hT] using hcard
 
 /-- A covering of `[0,N)` by indexed classes satisfies the elementary
 sum-capacity inequality. -/
