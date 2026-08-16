@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  overlap-step:
+  proof-kernel:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout upstream centurion
@@ -20,8 +20,10 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: harness
-      - name: Overlay proof module
-        run: cp harness/proofs/OverlapStep.lean Erdos7/OverlapStep.lean
+      - name: Overlay proof modules
+        run: |
+          cp harness/proofs/OverlapStep.lean Erdos7/OverlapStep.lean
+          cp harness/proofs/CapacityLogic.lean Erdos7/CapacityLogic.lean
       - name: Install pinned Lean toolchain
         uses: leanprover/lean-action@v1
         with:
@@ -30,8 +32,10 @@ jobs:
           test: false
           lint: false
           use-mathlib-cache: true
-      - name: Kernel-check overlap step
-        run: lake env lean Erdos7/OverlapStep.lean
+      - name: Kernel-check proof modules
+        run: |
+          lake env lean Erdos7/OverlapStep.lean
+          lake env lean Erdos7/CapacityLogic.lean
       - name: Source trust gate
         run: |
-          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean
+          ! grep -nE '\bsorry\b|\badmit\b|\baxiom\b|native_decide' Erdos7/OverlapStep.lean Erdos7/CapacityLogic.lean
