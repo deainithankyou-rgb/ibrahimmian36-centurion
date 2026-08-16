@@ -32,5 +32,5 @@ theorem forced_modulus_of_density
 
 /-- Closed kernel arithmetic for the first 10395 forcing step. -/
 theorem capacity_without_3_10395 :
-    ∑ d ∈ (10395 : ℕ).divisors.erase 1 |>.erase 3, 10395 / d < 10395 := by
+    ∑ d ∈ ((10395 : ℕ).divisors.erase 1).erase 3, 10395 / d < 10395 := by
   norm_num [Nat.divisors]
