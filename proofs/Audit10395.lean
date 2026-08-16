@@ -1,0 +1,4 @@
+import Erdos7.Bridge10395
+
+#print axioms no_distinct_divisor_cover_10395
+#print axioms no_covering_lcm_dvd_10395_structural
