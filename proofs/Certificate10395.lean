@@ -15,17 +15,17 @@ private theorem allowed_of_hyp_10395 (S : Finset (ℕ × ℕ))
 private theorem cap3_without5 :
     ∑ d ∈ (allowed10395.erase 3).erase 5, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
-  norm_num [allowed10395, onePrimeCap, Nat.divisors]
+  decide
 
 private theorem cap3_without7 :
     ∑ d ∈ (allowed10395.erase 3).erase 7, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
-  norm_num [allowed10395, onePrimeCap, Nat.divisors]
+  decide
 
 private theorem cap3_without11 :
     ∑ d ∈ (allowed10395.erase 3).erase 11, onePrimeCap 10395 3 d <
       (10395 / 3) * (3 - 1) := by
-  norm_num [allowed10395, onePrimeCap, Nat.divisors]
+  decide
 
 /-- Any normalized distinct-modulus covering of `[0,10395)` using divisors of
 10395 would have to contain classes with moduli 3, 5, 7 and 11. -/
