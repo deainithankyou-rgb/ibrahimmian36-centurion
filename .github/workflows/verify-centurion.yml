@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+concurrency:
+  group: centurion-proof-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -37,6 +41,7 @@ jobs:
       - name: Kernel-check proof modules
         run: |
           for f in OverlapStep CapacityLogic OverlapSequence OnePrimeCapacity ForcedModulus ConditionedForcing Certificate10395; do
+            echo "=== checking $f ==="
             lake env lean Erdos7/$f.lean
           done
       - name: Source trust gate
